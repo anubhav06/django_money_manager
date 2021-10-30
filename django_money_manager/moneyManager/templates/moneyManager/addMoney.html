@@ -38,7 +38,7 @@
 
         <form action="{% url 'addMoney' %}" method="POST">
             {% csrf_token %}
-            <input type="number" min="0" step="1" name="newTransaction">
+            <input type="number" min="0" max="{{balance}}" step="1" name="newTransaction">
             <select id="categories" name="categories" required>
                 {% for category in categories %}
                     <option value="{{category.name}}"> {{category.name}} </option>

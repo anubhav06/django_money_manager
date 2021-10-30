@@ -139,6 +139,9 @@ def addMoney(request):
             
             # Update the balance
             user = User.objects.get(username=currentUser)
+
+            if user.currentMoney - int(amount) < 0:
+                return HttpResponse("ERROR: You don't have that much money to spend!")
             user.currentMoney -= int(amount)
             user.save()
 
