@@ -3,8 +3,18 @@
 
 {% block body %}
 
+    {% if user.is_authenticated and money != 0 %}
+    <!-- View for those logged in and money is added (i.e. not 0) -->
+    Total money added: {{money}} <br>
+    Balance left = {{balance}} <br> 
 
-    MAIN PAGE HERE
+    <a href="{% url 'addMoney' %}"> Add Money/ View transaction/ Details </a> 
 
+    {% else %} 
+    <!-- View for those not logged in  -->
+        --intro-- <br>
 
+        <a href="{% url 'addMoney' %}"> GET STARTED </a> 
+
+    {% endif %}
 {% endblock %}

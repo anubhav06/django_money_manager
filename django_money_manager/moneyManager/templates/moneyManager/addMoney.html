@@ -1,0 +1,68 @@
+{% extends "moneyManager/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+
+    {% if money == 0 %}
+
+        You have 0 money added <br>
+        Add total money here:
+        <form action="{% url 'addMoney' %}" method="POST">
+            {% csrf_token %}
+            <input type="number" min="0" step="1" name="totalMoney">
+            <button type="submit"> Add Money </button>
+        </form>
+
+    {% else %}
+
+        <br><br> Your total added money: {{money}} <br>
+        <br> Your balance: {{balance}} <br>
+
+        <br> ----------------------------TO ADD A NEW CATEGORY---------------------------------- <br>
+        Add category: <br>
+
+        {% if message %} 
+            {{message}}
+        {% endif %}
+
+        <form action="{% url 'addMoney' %}" method="POST">
+            {% csrf_token %}
+            <input type="text" maxlength="32" name="category">
+            <button type="submit"> Add category </button>
+        </form>
+
+        
+        <br> --------------------------- TO ADD A NEW TRANSACTION -------------------------------- <br>
+        Add your transaction: <br>
+
+        <form action="{% url 'addMoney' %}" method="POST">
+            {% csrf_token %}
+            <input type="number" min="0" step="1" name="newTransaction">
+            <select id="categories" name="categories" required>
+                {% for category in categories %}
+                    <option value="{{category.name}}"> {{category.name}} </option>
+                {% endfor %}
+            </select>
+            <button type="submit"> Add transaction </button>
+
+        </form>
+
+        <br> ------------------------------ LIST OF TRANSACTIONS ----------------------------------- <br>
+        {% if transactions %}
+            {% for transaction in transactions %}
+                Rs. {{transaction.amount}} --- 
+                {{transaction.date}} ---
+                {{transaction.category}} --- <br>
+            {% endfor %}
+        {% else %}
+            You don't have any transactions
+        {% endif %}
+
+
+    {% endif %}
+
+
+
+
+{% endblock %}
