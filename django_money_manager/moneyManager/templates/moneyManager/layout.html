@@ -6,13 +6,17 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Money Manager{% endblock %}</title>
-  <link href="{% static 'login.css' %}" rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+  <link href="{% static 'index.css' %}" rel="stylesheet">
   {% block script %}
   {% endblock %}
 </head>
 
 <body>
-  <div class="topnav" id="myTopnav">
+  <!-- <div class="topnav" id="myTopnav">
     <a href="{% url 'index' %}">Money Manager</a>
 
     {% if user.is_authenticated %}
@@ -23,10 +27,35 @@
     <a href="{% url 'register' %}">Register</a>
     {% endif %}
     </a>
-  </div>
+  </div> -->
+  <header>
+    <div class="container">
+      <a href="{% url 'index' %}" class="logo"><span>M</span>oney <span>M</span>anager.</a>
+      <nav class="nav">
+        <ul>
+          <li><a href="#home">home</a></li>
+          <li><a href="#about">about</a></li>
+          <li><a href="#services">services</a></li>
+          <li><a href="#blog">blogs</a></li>
+          <li><a href="#contact">contact</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'logout' %}">Logout</li>
+          {% endif %}
+        </ul>
+      </nav>
+      <div class="fas fa-bars"></div>
+    </div>
+  </header>
+
 
   {% block body %}
   {% endblock %}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <script src="app.js"></script>
 </body>
 
 </html>
