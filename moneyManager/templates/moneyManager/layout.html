@@ -4,43 +4,174 @@
 <html lang="en">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Money Manager{% endblock %}</title>
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap-grid.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
-  <link href="{% static 'index.css' %}" rel="stylesheet">
-  {% block script %}
-  {% endblock %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- OrGaan1c Interledger -->
+    <meta name="monetization" content="$ilp.uphold.com/y9EK9QQGXZzf">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'addMoney.css' %}">
+    <title>{% block title %}Money Manager{% endblock %}</title>
+
+    <script>
+        if (document.monetization) {
+            document.monetization.addEventListener('monetizationstart', () => {
+                document.getElementById("paid").classList.remove("hidden");
+            })
+        }
+    </script>
+
 </head>
 
 <body>
-  <header>
-    <div class="container">
-      <a href="{% url 'index' %}" class="logo"><span>M</span>oney <span>M</span>anager.</a>
-      <nav class="nav">
-        <ul>
-          <li><a href="#home">home</a></li>
-          <li><a href="#about">about</a></li>
-          <li><a href="#services">services</a></li>
-          <li><a href="#blog">blogs</a></li>
-          <li><a href="#contact">contact</a></li>
-        </ul>
-      </nav>
-      <div class="fas fa-bars"></div>
+    <section>
+        <div class="container">
+            <div class="form">
+                <div class="form-header">
+                    <h2>Expense Tracker</h2>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}">Logout</a>
+                    {% endif %}
+                </div>
+
+                {% if money == 0 %}
+                <div class="money-info">
+                    <p>Total Money <span>{{money}}</span></p>
+                    <p>Wallet <span>{{balance}}</span></p>
+                </div>
+                <form action="{% url 'addMoney' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="inputBox">
+                        <input type="number" min="0" step="1" name="totalMoney" placeholder="Enter Amount">
+                    </div>
+                    <button class="button" type="submit"> Add Money </button>
+                </form>
+                {% else %}
+                <div class="money-info">
+                    <p>Total Money Added <span>{{money}}</span></p>
+                    <p>Money In Wallet <span>{{balance}}</span></p>
+                </div>
+                {% if message %}
+                {{message}}
+                {% endif %}
+
+                <form action="{% url 'addMoney' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="inputBox">
+                        <input type="text" maxlength="32" name="category" placeholder="Add Category">
+                    </div>
+                    <button class="button" type="submit"> Add category </button>
+                </form>
+                <form action="{% url 'addMoney' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="inputBox">
+                        <input type="number" min="0" max="{{balance}}" step="1" name="newTransaction">
+                    </div>
+                    <select class="categories" id="categories" name="categories" required>
+                        {% for category in categories %}
+                        <option value="{{category.name}}"> {{category.name}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class="button" type="submit"> Add transaction </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        <div id="paid" class="chart hidden">
+            <canvas id="myBarChart"></canvas>
+        </div>
+    </section>
+
+    <div class="history">
+        <h2>Transaction History</h2>
+        {% if transactions %}
+        {% for transaction in transactions %}
+        <div class="history-info">
+            <p><span>Category</span>: {{transaction.category.name}}</p>
+            <p><span>Amount</span>: {{transaction.amount}}</p>
+            <p><span>Date</span>: {{transaction.date}}</p>
+        </div>
+        {% endfor %}
+        {% else %}
+        You don't have any transactions
+        {% endif %}
     </div>
-  </header>
+
+    {% for category,amount in perCategoryMoney.items %}
+    <div id="categories1">
+        <span id="category">{{category}}</span>
+        <span id="amount">{{amount.amount__sum}}</span>
+    </div>
+    {% endfor %}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
+    <script>
+
+        const categories = [];
+        const amounts = [];
+        let len = 0;
+        document.addEventListener('DOMContentLoaded', function () {
+            const category = document.querySelectorAll('#category')
+            const amount = document.querySelectorAll('#amount');
+
+            category.forEach((category, index) => {
+                categories.push(category.innerHTML);
+            });
+            amount.forEach((amount, index) => {
+                amounts.push(parseInt(amount.innerHTML));
+            });
+
+            if (categories.length > 0)
+                len = categories.length;
+
+            const backgroundColors = [];
+            const borderColors = [];
+            for (let i = 0; i < len; i++) {
+                const rgb = [];
+                for (let j = 0; j < 3; j++) {
+                    rgb.push(Math.floor(Math.random() * 255));
+                }
+                backgroundColors.push('rgba(' + rgb.join(',') + ', 0.2)')
+                borderColors.push('rgba(' + rgb.join(',') + ', 1)')
+            }
 
 
-  {% block body %}
-  {% endblock %}
+            const ctxBar = document.getElementById('myBarChart').getContext('2d');
+            const myBarChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Money Spent',
+                        data: amounts,
+                        backgroundColor: [
+                            ...backgroundColors
+                        ],
+                        borderColor: [
+                            ...borderColors
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    }
+                }
+            });
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+        })
+        console.log(len);
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-  <script src="app.js"></script>
+
+
+
+    </script>
 </body>
 
 </html>
