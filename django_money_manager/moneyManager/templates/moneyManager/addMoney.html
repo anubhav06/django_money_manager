@@ -100,37 +100,56 @@
     </div>
 
     {% for category,amount in perCategoryMoney.items %}
-        Category Name: {{category}} <br>
-        Amount: {{amount.amount__sum}} <br>
+    <div id="categories1">
+        <span id="category">{{category}}</span>
+        <span id="amount">{{amount.amount__sum}}</span>
+    </div>
     {% endfor %}
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
     <script>
 
+        const categories = [];
+        const amounts = [];
+        document.addEventListener('DOMContentLoaded', function () {
+            const category = document.querySelectorAll('#category')
+            const amount = document.querySelectorAll('#amount');
+
+            category.forEach((category, index) => {
+                categories.push(category.innerHTML);
+            });
+            amount.forEach((amount, index) => {
+                amounts.push(parseInt(amount.innerHTML));
+            });
+        })
+        console.log(categories, amounts)
+
+
+
+        const backgroundColors = [];
+        const borderColors = [];
+        for (let i = 0; i < 3; i++) {
+            const rgb = [];
+            for (let j = 0; j < 3; j++) {
+                rgb.push(Math.floor(Math.random() * 255));
+            }
+            backgroundColors.push('rgba(' + rgb.join(',') + ', 0.2)')
+            borderColors.push('rgba(' + rgb.join(',') + ', 1)')
+        }
 
         const ctxBar = document.getElementById('myBarChart').getContext('2d');
         const myBarChart = new Chart(ctxBar, {
             type: 'bar',
             data: {
-                labels: ['Fun', 'Health', 'Candy'],
+                labels: categories,
                 datasets: [{
                     label: 'Money Spent',
-                    data: [70, 25, 3],
+                    data: amounts,
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        // 'rgba(75, 192, 192, 0.2)',
-                        // 'rgba(153, 102, 255, 0.2)',
-                        // 'rgba(255, 159, 64, 0.2)'
+                        ...backgroundColors
                     ],
                     borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        // 'rgba(75, 192, 192, 1)',
-                        // 'rgba(153, 102, 255, 1)',
-                        // 'rgba(255, 159, 64, 1)'
+                        ...borderColors
                     ],
                     borderWidth: 1
                 }]
@@ -139,7 +158,6 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: 100
                     }
                 }
             }
