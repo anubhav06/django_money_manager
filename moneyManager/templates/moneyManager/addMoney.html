@@ -99,46 +99,76 @@
         {% endif %}
     </div>
 
+    {% for category,amount in perCategoryMoney.items %}
+    <div id="categories1">
+        <span id="category">{{category}}</span>
+        <span id="amount">{{amount.amount__sum}}</span>
+    </div>
+    {% endfor %}
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
     <script>
 
+        const categories = [];
+        const amounts = [];
+        let len = 0;
+        document.addEventListener('DOMContentLoaded', function () {
+            const category = document.querySelectorAll('#category')
+            const amount = document.querySelectorAll('#amount');
 
-        const ctxBar = document.getElementById('myBarChart').getContext('2d');
-        const myBarChart = new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: ['Fun', 'Health', 'Candy'],
-                datasets: [{
-                    label: 'Money Spent',
-                    data: [70, 25, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        // 'rgba(75, 192, 192, 0.2)',
-                        // 'rgba(153, 102, 255, 0.2)',
-                        // 'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        // 'rgba(75, 192, 192, 1)',
-                        // 'rgba(153, 102, 255, 1)',
-                        // 'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
+            category.forEach((category, index) => {
+                categories.push(category.innerHTML);
+            });
+            amount.forEach((amount, index) => {
+                amounts.push(parseInt(amount.innerHTML));
+            });
+
+            if (categories.length > 0)
+                len = categories.length;
+
+            const backgroundColors = [];
+            const borderColors = [];
+            for (let i = 0; i < len; i++) {
+                const rgb = [];
+                for (let j = 0; j < 3; j++) {
+                    rgb.push(Math.floor(Math.random() * 255));
+                }
+                backgroundColors.push('rgba(' + rgb.join(',') + ', 0.2)')
+                borderColors.push('rgba(' + rgb.join(',') + ', 1)')
+            }
+
+
+            const ctxBar = document.getElementById('myBarChart').getContext('2d');
+            const myBarChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Money Spent',
+                        data: amounts,
+                        backgroundColor: [
+                            ...backgroundColors
+                        ],
+                        borderColor: [
+                            ...borderColors
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
                     }
                 }
-            }
-        });
+            });
+
+        })
+        console.log(len);
+
+
+
 
 
     </script>
