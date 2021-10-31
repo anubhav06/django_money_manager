@@ -3,18 +3,108 @@
 
 {% block body %}
 
-    {% if user.is_authenticated and money != 0 %}
-    <!-- View for those logged in and money is added (i.e. not 0) -->
-    Total money added: {{money}} <br>
+<!-- {% if user.is_authenticated and money != 0 %} -->
+<!-- View for those logged in and money is added (i.e. not 0) -->
+<!-- Total money added: {{money}} <br>
     Balance left = {{balance}} <br> 
 
     <a href="{% url 'addMoney' %}"> Add Money/ View transaction/ Details </a> 
 
-    {% else %} 
-    <!-- View for those not logged in  -->
-        --intro-- <br>
+    {% else %}  -->
+<!-- View for those not logged in  -->
+<!-- --intro-- <br>
 
         <a href="{% url 'addMoney' %}"> GET STARTED </a> 
 
-    {% endif %}
+    {% endif %} -->
+
+
+{% if not user.is_authenticated and money != 0 %}
+<section class="home" id="home">
+    <div class="container">
+        <div class="row min-vh-100 align-items-center text-center text-md-left">
+            <div class="col-md-6 pr-md-5">
+                <img src="{% static 'home.jpg' %}" width="100%" alt="">
+            </div>
+            <div class="col-md-6 pl-md-5 content">
+                <h1><span>keep</span> a track on your <span>expenses</span> with us.</h1>
+                <h3>always for you.</h3>
+                <a href="{% url 'login' %}"><button class="button">login</button></a>
+                <a href="{% url 'register' %}"><button class="button">sign up</button></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about" id="about">
+    <div class="container">
+        <div class="row min-vh-100 align-items-center">
+            <div class="col-md-6 content">
+                <div class="box">
+                    <h3> <i class="fas fa-calculator"></i> calculator </h3>
+                    <p>We have in-built calculator for you so that you can calculate all your expenses and savings
+                        without any hurdles.</p>
+                </div>
+                <div class="box">
+                    <h3> <i class="far fa-address-book"></i> diary </h3>
+                    <p>In-built address bbok cum diary to keep records of lenders and borrowers.</p>
+                </div>
+                <div class="box">
+                    <h3> <i class="fas fa-chart-bar"></i>></i> statistics </h3>
+                    <p>Interpretation of your ins and out of wallet in the form of statistics.</p>
+                </div>
+                <div class="box">
+                    <h3> <i class="fas fa-percent"></i> offers </h3>
+                    <p>we also have occasional offers for you to avail in our inventory which will be notified to
+                        you
+                        time to time</p>
+                </div>
+            </div>
+            <div class="col-md-6 d-none d-md-block">
+                <img src="{% static 'about.webp' %}" 100%" alt="logo">
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="footer">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-4">
+                <a href="#" class="logo"><span>M</span>oney <span>M</span>anager.</a>
+            </div>
+
+            <div class="col-md-4 text-center">
+                <h3>links</h3>
+                <a href="#">home</a>
+                <a href="#">about</a>
+                <a href="#">services</a>
+                <a href="#">blogs</a>
+                <a href="#">contact</a>
+            </div>
+
+            <div class="col-md-4 text-center">
+                <h3>share</h3>
+                <a href="#">facebook</a>
+                <a href="#">twitter</a>
+                <a href="#">instagram</a>
+                <a href="#">github</a>
+                <a href="#">discord</a>
+            </div>
+
+        </div>
+
+    </div>
+    <h1 class="credit text-center mx-auto">created by <span>Ancient Clouds</span> | all rights reserved</h1>
+</section>
+{% endif %}
+
+
 {% endblock %}

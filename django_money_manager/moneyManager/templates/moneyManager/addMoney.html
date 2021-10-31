@@ -1,68 +1,148 @@
-{% extends "moneyManager/layout.html" %}
 {% load static %}
 
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- OrGaan1c Interledger -->
+    <meta name="monetization" content="$ilp.uphold.com/y9EK9QQGXZzf">
 
-    {% if money == 0 %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'addMoney.css' %}">
+    <title>{% block title %}Money Manager{% endblock %}</title>
 
-        You have 0 money added <br>
-        Add total money here:
-        <form action="{% url 'addMoney' %}" method="POST">
-            {% csrf_token %}
-            <input type="number" min="0" step="1" name="totalMoney">
-            <button type="submit"> Add Money </button>
-        </form>
+    <script>
+        if (document.monetization) {
+            document.monetization.addEventListener('monetizationstart', () => {
+                document.getElementById("paid").classList.remove("hidden");
+            })
+        }
+    </script>
 
-    {% else %}
+</head>
 
-        <br><br> Your total added money: {{money}} <br>
-        <br> Your balance: {{balance}} <br>
+<body>
+    <section>
+        <div class="container">
+            <div class="form">
+                <div class="form-header">
+                    <h2>Expense Tracker</h2>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}">Logout</a>
+                    {% endif %}
+                </div>
 
-        <br> ----------------------------TO ADD A NEW CATEGORY---------------------------------- <br>
-        Add category: <br>
+                {% if money == 0 %}
+                <div class="money-info">
+                    <p>Total Money <span>{{money}}</span></p>
+                    <p>Wallet <span>{{balance}}</span></p>
+                </div>
+                <form action="{% url 'addMoney' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="inputBox">
+                        <input type="number" min="0" step="1" name="totalMoney" placeholder="Enter Amount">
+                    </div>
+                    <button class="button" type="submit"> Add Money </button>
+                </form>
+                {% else %}
+                <div class="money-info">
+                    <p>Total Money Added <span>{{money}}</span></p>
+                    <p>Money In Wallet <span>{{balance}}</span></p>
+                </div>
+                {% if message %}
+                {{message}}
+                {% endif %}
 
-        {% if message %} 
-            {{message}}
-        {% endif %}
+                <form action="{% url 'addMoney' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="inputBox">
+                        <input type="text" maxlength="32" name="category" placeholder="Add Category">
+                    </div>
+                    <button class="button" type="submit"> Add category </button>
+                </form>
+                <form action="{% url 'addMoney' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="inputBox">
+                        <input type="number" min="0" max="{{balance}}" step="1" name="newTransaction">
+                    </div>
+                    <select class="categories" id="categories" name="categories" required>
+                        {% for category in categories %}
+                        <option value="{{category.name}}"> {{category.name}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class="button" type="submit"> Add transaction </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        <div id="paid" class="chart hidden">
+            <canvas id="myBarChart"></canvas>
+        </div>
+    </section>
 
-        <form action="{% url 'addMoney' %}" method="POST">
-            {% csrf_token %}
-            <input type="text" maxlength="32" name="category">
-            <button type="submit"> Add category </button>
-        </form>
-
-        
-        <br> --------------------------- TO ADD A NEW TRANSACTION -------------------------------- <br>
-        Add your transaction: <br>
-
-        <form action="{% url 'addMoney' %}" method="POST">
-            {% csrf_token %}
-            <input type="number" min="0" max="{{balance}}" step="1" name="newTransaction">
-            <select id="categories" name="categories" required>
-                {% for category in categories %}
-                    <option value="{{category.name}}"> {{category.name}} </option>
-                {% endfor %}
-            </select>
-            <button type="submit"> Add transaction </button>
-
-        </form>
-
-        <br> ------------------------------ LIST OF TRANSACTIONS ----------------------------------- <br>
+    <div class="history">
+        <h2>Transaction History</h2>
         {% if transactions %}
-            {% for transaction in transactions %}
-                Rs. {{transaction.amount}} --- 
-                {{transaction.date}} ---
-                {{transaction.category}} --- <br>
-            {% endfor %}
+        {% for transaction in transactions %}
+        <div class="history-info">
+            <p><span>Category</span>: {{transaction.category}}</p>
+            <p><span>Amount</span>: {{transaction.amount}}</p>
+            <p><span>Date</span>: {{transaction.date}}</p>
+        </div>
+        {% endfor %}
         {% else %}
-            You don't have any transactions
+        You don't have any transactions
         {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
+    <script>
 
 
-    {% endif %}
+
+        const ctxBar = document.getElementById('myBarChart').getContext('2d');
+        const myBarChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Fun', 'Health', 'Candy'],
+                datasets: [{
+                    label: 'Money Spent',
+                    data: [70, 25, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        // 'rgba(75, 192, 192, 0.2)',
+                        // 'rgba(153, 102, 255, 0.2)',
+                        // 'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        // 'rgba(75, 192, 192, 1)',
+                        // 'rgba(153, 102, 255, 1)',
+                        // 'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
 
 
+    </script>
+</body>
 
-
-{% endblock %}
+</html>

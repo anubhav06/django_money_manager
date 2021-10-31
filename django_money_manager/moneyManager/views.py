@@ -37,7 +37,7 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("addMoney"))
         else:
             return render(request, "moneyManager/login.html", {
                 "message": "Invalid username and/or password."
@@ -73,7 +73,7 @@ def register(request):
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("addMoney"))
     else:
         return render(request, "moneyManager/register.html")
 
