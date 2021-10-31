@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 
 from .models import User, Categories, Transaction
 
@@ -18,10 +19,7 @@ def index(request):
         money = user.totalMoney
         balance = user.currentMoney
 
-        return render(request, "moneyManager/index.html",{
-            "money" : money,
-            "balance" : balance
-        })
+        return HttpResponseRedirect(reverse("addMoney"))
     
     return render(request, "moneyManager/index.html")
 
@@ -158,9 +156,18 @@ def addMoney(request):
         balance = user.currentMoney
         categories = Categories.objects.filter(user = user)
         transactions = Transaction.objects.filter(user = user)
+
+        perCategoryMoney = {}
+
+        for category in categories:
+            perCategoryMoney[category.name] = Transaction.objects.filter(user = user, category = category).aggregate(Sum('amount'))
+            
+        print(perCategoryMoney)
+
         return render(request, "moneyManager/addMoney.html", {
             "money" : money,
             "categories" : categories,
             "balance" : balance,
-            "transactions" : transactions
+            "transactions" : transactions,
+            "perCategoryMoney" : perCategoryMoney
         })

@@ -89,7 +89,7 @@
         {% if transactions %}
         {% for transaction in transactions %}
         <div class="history-info">
-            <p><span>Category</span>: {{transaction.category}}</p>
+            <p><span>Category</span>: {{transaction.category.name}}</p>
             <p><span>Amount</span>: {{transaction.amount}}</p>
             <p><span>Date</span>: {{transaction.date}}</p>
         </div>
@@ -99,9 +99,13 @@
         {% endif %}
     </div>
 
+    {% for category,amount in perCategoryMoney.items %}
+        Category Name: {{category}} <br>
+        Amount: {{amount.amount__sum}} <br>
+    {% endfor %}
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
     <script>
-
 
 
         const ctxBar = document.getElementById('myBarChart').getContext('2d');
