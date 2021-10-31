@@ -111,6 +111,7 @@
 
         const categories = [];
         const amounts = [];
+        let len = 0;
         document.addEventListener('DOMContentLoaded', function () {
             const category = document.querySelectorAll('#category')
             const amount = document.querySelectorAll('#amount');
@@ -121,47 +122,53 @@
             amount.forEach((amount, index) => {
                 amounts.push(parseInt(amount.innerHTML));
             });
-        })
-        console.log(categories, amounts)
 
+            if (categories.length > 0)
+                len = categories.length;
 
-
-        const backgroundColors = [];
-        const borderColors = [];
-        for (let i = 0; i < 3; i++) {
-            const rgb = [];
-            for (let j = 0; j < 3; j++) {
-                rgb.push(Math.floor(Math.random() * 255));
+            const backgroundColors = [];
+            const borderColors = [];
+            for (let i = 0; i < len; i++) {
+                const rgb = [];
+                for (let j = 0; j < 3; j++) {
+                    rgb.push(Math.floor(Math.random() * 255));
+                }
+                backgroundColors.push('rgba(' + rgb.join(',') + ', 0.2)')
+                borderColors.push('rgba(' + rgb.join(',') + ', 1)')
             }
-            backgroundColors.push('rgba(' + rgb.join(',') + ', 0.2)')
-            borderColors.push('rgba(' + rgb.join(',') + ', 1)')
-        }
 
-        const ctxBar = document.getElementById('myBarChart').getContext('2d');
-        const myBarChart = new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: categories,
-                datasets: [{
-                    label: 'Money Spent',
-                    data: amounts,
-                    backgroundColor: [
-                        ...backgroundColors
-                    ],
-                    borderColor: [
-                        ...borderColors
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
+
+            const ctxBar = document.getElementById('myBarChart').getContext('2d');
+            const myBarChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Money Spent',
+                        data: amounts,
+                        backgroundColor: [
+                            ...backgroundColors
+                        ],
+                        borderColor: [
+                            ...borderColors
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
                     }
                 }
-            }
-        });
+            });
+
+        })
+        console.log(len);
+
+
+
 
 
     </script>
